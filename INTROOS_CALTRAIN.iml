@@ -7,5 +7,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+<<<<<<< HEAD
+=======
+    <orderEntry type="library" name="lib" level="project" />
+>>>>>>> 02e74646b58050fe06bf5c1531a99d7a9d421c4d
   </component>
 </module>
