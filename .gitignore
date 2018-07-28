@@ -1,7 +1,10 @@
 # Compiled class file
 *.class
+
+#IntelliJ files
 .idea
-INTROOS_CALTRAIN.iml
+*.iml
+
 # Log file
 *.log
 
