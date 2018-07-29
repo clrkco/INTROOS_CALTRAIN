@@ -7,6 +7,7 @@ public class Train implements Runnable{
     private int numberOfSeats;
     private Semaphore trainMutex;
     private ArrayList<Robot> passengers;
+    private ArrayList<Robot> dropoff;
     private final Station[] stations;
     private int trainID;
     private int trainLocation;
@@ -19,9 +20,10 @@ public class Train implements Runnable{
         this.trainID = trainID;
         this.doorStatus = DoorStatus.CLOSED;
         trainRunning = true;
-        Semaphore trainMutex = new Semaphore(numberOfSeats);
+        trainMutex = new Semaphore(numberOfSeats);
         this.trainLocation = 0;
         this.passengers = new ArrayList<>();
+        this.dropoff = new ArrayList<>();
     }
 
     @Override
@@ -31,23 +33,53 @@ public class Train implements Runnable{
         {
             this.stations[this.trainLocation].setTrainOnStation(this);
             try {
-                this.stations[this.trainLocation].Station_Load_Train(this);
-
+                System.out.println("permits available: " + trainMutex.availablePermits());
+                System.out.println(stations[trainLocation].getStationName());
+//                this.DropPassenger();
+                this.stations[this.trainLocation].Station_Load_Train();
+                trainLocation = (trainLocation+1)%(stations.length-1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public Semaphore getTrainMutex() {
+    public Semaphore getTrainMutex()
+    {
         return trainMutex;
     }
 
-    public void setDoorStatus(DoorStatus doorStatus) {
+    public void SetDoorStatus(DoorStatus doorStatus)
+    {
         this.doorStatus = doorStatus;
     }
 
-    public void addPassenger(Robot robot){
+    public void AddPassenger(Robot robot)
+    {
         passengers.add(robot);
+    }
+
+    public void DropPassenger()
+    {
+//        for(Robot robot : passengers){
+//            if(robot.getStationDestination().getStationNumber() == trainLocation){
+//                passengers.remove(robot);
+//                trainMutex.release();
+//            }
+//        }
+        for (Robot robot : passengers){
+            System.out.println(robot);
+        }
+        dropoff.clear();
+        for (Robot robot : passengers) {
+            if(robot.getStationDestination().getStationNumber() == trainLocation) {
+//                TextFrame.textarea.append("It's " + passenger.getROBOT_NAME()+ "[" + this.TRAIN_NOOFPASSENGERS +"]" + "'s destination, dropping off from " + TRAIN_STATIONS[getTRAIN_WHERE()].getSTATION_NAME() + "\n");
+                System.out.println("Train Location: " + trainLocation);
+                System.out.println("Destination Station Number : " + robot.getStationDestination().getStationNumber());
+                dropoff.add(robot);
+            }
+        }
+        passengers.removeAll(dropoff);
+        trainMutex.release(dropoff.size());
     }
 }

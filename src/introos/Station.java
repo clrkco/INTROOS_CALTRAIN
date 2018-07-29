@@ -41,10 +41,12 @@ public class Station {
     {
         if(stationPassengersWaiting == 0)
         {
+            System.out.println("No passengers waiting.");
             int destinationStationNumber=stationNumber;
             Random random = new Random();
             Random stationRandom = new Random();
             Boolean sameStationNumber;
+
             for(int i =0; i < (random.nextInt(stationCapacity)+1); i++)
             {
                 sameStationNumber=true;
@@ -55,25 +57,29 @@ public class Station {
                         sameStationNumber=false;
                 }
                 Robot robot = new Robot(this, stations[destinationStationNumber]);
+                System.out.println("Destination of robot " + i + " = " + stations[destinationStationNumber].getStationName());
                 stationRobots.add(new Thread(robot));
                 stationRobots.get(stationRobots.size()-1).start();
                 stationRobotPOJO.add(robot);
+                stationPassengersWaiting++;
             }
+            System.out.println("POJO SIZE = " + stationRobotPOJO.size());
         }
     }
 
     public void Station_On_Board(Robot robot) throws InterruptedException {
+//        System.out.println("Train on Station id: " + trainOnStation);
         this.stationMutex.acquire();
         try {
             if (this.trainOnStation.getTrainMutex().availablePermits() == 0) {
                 this.stationMutex.release();
                 Station_Wait_For_Train(robot);
             } else {
+                System.out.println("in here");
                 trainOnStation.getTrainMutex().acquire();
                 this.stationPassengersWaiting--;
-                trainOnStation.addPassenger(robot);
                 robot.setRobotStatus(RobotStatus.ONBOARD);
-                trainOnStation.addPassenger(robot);
+                trainOnStation.AddPassenger(robot);
                 stationRobotPOJO.remove(robot);
             }
         } catch (Exception e){
@@ -82,29 +88,35 @@ public class Station {
         this.stationMutex.release();
     }
 
-    public synchronized void Station_Load_Train(Train train) throws InterruptedException
+    public synchronized void Station_Load_Train() throws InterruptedException
     {
         this.stationMutex.acquire();
-        train.setDoorStatus(DoorStatus.OPEN);
+        trainOnStation.SetDoorStatus(DoorStatus.OPEN);
+        trainOnStation.DropPassenger();
+//        System.out.println(stationRobotPOJO);
+//        System.out.println(stationPassengersWaiting);
         if(stationPassengersWaiting==0)
         {
 
         }
-        else if(train.getTrainMutex().availablePermits() == 0)
+        else if(trainOnStation.getTrainMutex().availablePermits() == 0)
         {
             //no seats on train available
         }
         else
         {
+            System.out.println("notified passengers");
             this.notifyAll(); //wake all waiting robot threads
         }
         Thread.sleep(3000);
-        train.setDoorStatus(DoorStatus.CLOSED);
+        trainOnStation.SetDoorStatus(DoorStatus.CLOSED);
         this.stationMutex.release();
     }
 
     public synchronized void Station_Wait_For_Train(Robot robot) throws InterruptedException
     {
+        this.stationMutex.acquire();
+        this.stationMutex.release();
         wait();
         this.Station_On_Board(robot);
     }
@@ -115,5 +127,13 @@ public class Station {
 
     public void setTrainOnStation(Train trainOnStation) {
         this.trainOnStation = trainOnStation;
+    }
+
+    public int getStationNumber() {
+        return stationNumber;
+    }
+
+    public String getStationName() {
+        return stationName;
     }
 }
