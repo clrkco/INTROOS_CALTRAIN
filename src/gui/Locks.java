@@ -5,11 +5,11 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 
-public class Frame extends JFrame
+public class Locks extends JFrame
 {
-    public Frame()
+    public Locks()
     {
-        this.setTitle("CalTrainII Automation");
+        this.setTitle("CalTrainII Automation (Locks)");
         this.setSize(1200, 600);
         this.setMinimumSize(new Dimension(1200, 600));
         this.setLocation(10, 10);
@@ -18,8 +18,8 @@ public class Frame extends JFrame
 
         this.setLayout(new MigLayout());
 
-        this.add(new System(),"pushx, growx, wrap");
-        this.add(new Visual(),"pushx, growx, wrap");
-        this.add(new Control(), "pushx, growx, wrap");
+        this.add(new SystemLocks(),"pushx, growx, wrap");
+        this.add(new StatusLocks(),"pushx, growx, wrap");
+        this.add(new ControlLocks(), "pushx, growx, wrap");
     }
 }

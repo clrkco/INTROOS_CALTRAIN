@@ -1,7 +1,5 @@
 package gui;
 
-import javax.swing.*;
-
 public class CalTrain_GUI
 {
     public static void main(String[] args)
@@ -10,7 +8,8 @@ public class CalTrain_GUI
         {
             public void run()
             {
-                JFrame Frame = new Frame();
+                new Locks();
+                new Semaphores();
             }
         });
     }

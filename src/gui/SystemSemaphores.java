@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class System extends JPanel implements ActionListener
+public class SystemSemaphores extends JPanel implements ActionListener
 {
     static JLabel
             Station1Label,
@@ -56,8 +56,8 @@ public class System extends JPanel implements ActionListener
             TrackHPanel;
 
     Font stationFont = new Font("Georgia", Font.PLAIN, 20);
-    
-    public System()
+
+    public SystemSemaphores()
     {
         this.setLayout(new MigLayout("", "[150,fill, grow]", "[150,fill]"));
         this.setBorder(BorderFactory.createTitledBorder(
@@ -263,68 +263,68 @@ public class System extends JPanel implements ActionListener
     {
         switch(stationName)
         {
-            case "Station 1":
-                Station1Panel.setBackground(Color.white);
+            case "Station1":
+                Station1Panel.setBackground(Color.green);
                 Station1Label.setText(trainName);
                 break;
-            case "Track A":
-                TrackAPanel.setBackground(Color.white);
+            case "TrackA":
+                TrackAPanel.setBackground(Color.green);
                 TrackALabel.setText(trainName);
                 break;
-            case "Station 2":
-                Station2Panel.setBackground(Color.white);
+            case "Station2":
+                Station2Panel.setBackground(Color.green);
                 Station2Label.setText(trainName);
                 break;
-            case "Track B":
-                TrackBPanel.setBackground(Color.white);
+            case "TrackB":
+                TrackBPanel.setBackground(Color.green);
                 TrackBLabel.setText(trainName);
                 break;
-            case "Station 3":
-                Station3Panel.setBackground(Color.white);
+            case "Station3":
+                Station3Panel.setBackground(Color.green);
                 Station3Label.setText(trainName);
                 break;
-            case "Track C":
-                TrackCPanel.setBackground(Color.white);
+            case "TrackC":
+                TrackCPanel.setBackground(Color.green);
                 TrackCLabel.setText(trainName);
                 break;
-            case "Station 4":
-                Station4Panel.setBackground(Color.white);
+            case "Station4":
+                Station4Panel.setBackground(Color.green);
                 Station4Label.setText(trainName);
                 break;
-            case "Track D":
-                TrackDPanel.setBackground(Color.white);
+            case "TrackD":
+                TrackDPanel.setBackground(Color.green);
                 TrackDLabel.setText(trainName);
                 break;
-            case "Station 5":
-                Station5Panel.setBackground(Color.white);
+            case "Station5":
+                Station5Panel.setBackground(Color.green);
                 Station5Label.setText(trainName);
                 break;
-            case "Track E":
-                TrackEPanel.setBackground(Color.white);
+            case "TrackE":
+                TrackEPanel.setBackground(Color.green);
                 TrackELabel.setText(trainName);
                 break;
-            case "Station 6":
-                Station6Panel.setBackground(Color.white);
+            case "Station6":
+                Station6Panel.setBackground(Color.green);
                 Station6Label.setText(trainName);
                 break;
-            case "Track F":
-                TrackFPanel.setBackground(Color.white);
+            case "TrackF":
+                TrackFPanel.setBackground(Color.green);
                 TrackFLabel.setText(trainName);
                 break;
-            case "Station 7":
-                Station7Panel.setBackground(Color.white);
+            case "Station7":
+                Station7Panel.setBackground(Color.green);
                 Station7Label.setText(trainName);
                 break;
-            case "Track G":
-                TrackGPanel.setBackground(Color.white);
+            case "TrackG":
+                TrackGPanel.setBackground(Color.green);
                 TrackGLabel.setText(trainName);
                 break;
-            case "Station 8":
-                Station8Panel.setBackground(Color.white);
+            case "Station8":
+                Station8Panel.setBackground(Color.green);
                 Station8Label.setText(trainName);
                 break;
-            case "Track H":
-                TrackHPanel.setBackground(Color.white);
+            case "TrackH":
+                TrackHPanel.setBackground(Color.green);
                 TrackHLabel.setText(trainName);
                 break;
         }
@@ -334,67 +334,67 @@ public class System extends JPanel implements ActionListener
     {
         switch(stationName)
         {
-            case "Station 1":
+            case "Station1":
                 Station1Panel.setBackground(Color.white);
                 Station1Label.setText(stationName);
                 break;
-            case "Track A":
+            case "TrackA":
                 TrackAPanel.setBackground(Color.white);
                 TrackALabel.setText(stationName);
                 break;
-            case "Station 2":
+            case "Station2":
                 Station2Panel.setBackground(Color.white);
                 Station2Label.setText(stationName);
                 break;
-            case "Track B":
+            case "TrackB":
                 TrackBPanel.setBackground(Color.white);
                 TrackBLabel.setText(stationName);
                 break;
-            case "Station 3":
+            case "Station3":
                 Station3Panel.setBackground(Color.white);
                 Station3Label.setText(stationName);
                 break;
-            case "Track C":
+            case "TrackC":
                 TrackCPanel.setBackground(Color.white);
                 TrackCLabel.setText(stationName);
                 break;
-            case "Station 4":
+            case "Station4":
                 Station4Panel.setBackground(Color.white);
                 Station4Label.setText(stationName);
                 break;
-            case "Track D":
+            case "TrackD":
                 TrackDPanel.setBackground(Color.white);
                 TrackDLabel.setText(stationName);
                 break;
-            case "Station 5":
+            case "Station5":
                 Station5Panel.setBackground(Color.white);
                 Station5Label.setText(stationName);
                 break;
-            case "Track E":
+            case "TrackE":
                 TrackEPanel.setBackground(Color.white);
                 TrackELabel.setText(stationName);
                 break;
-            case "Station 6":
+            case "Station6":
                 Station6Panel.setBackground(Color.white);
                 Station6Label.setText(stationName);
                 break;
-            case "Track F":
+            case "TrackF":
                 TrackFPanel.setBackground(Color.white);
                 TrackFLabel.setText(stationName);
                 break;
-            case "Station 7":
+            case "Station7":
                 Station7Panel.setBackground(Color.white);
                 Station7Label.setText(stationName);
                 break;
-            case "Track G":
+            case "TrackG":
                 TrackGPanel.setBackground(Color.white);
                 TrackGLabel.setText(stationName);
                 break;
-            case "Station 8":
+            case "Station8":
                 Station8Panel.setBackground(Color.white);
                 Station8Label.setText(stationName);
                 break;
-            case "Track H":
+            case "TrackH":
                 TrackHPanel.setBackground(Color.white);
                 TrackHLabel.setText(stationName);
                 break;
@@ -405,28 +405,28 @@ public class System extends JPanel implements ActionListener
     {
         switch(stationName)
         {
-            case "Station 1":
+            case "Station1":
                 Waiting1Label.setText(waiting + "");
                 break;
-            case "Station 2":
+            case "Station2":
                 Waiting2Label.setText(waiting + "");
                 break;
-            case "Station 3":
+            case "Station3":
                 Waiting3Label.setText(waiting + "");
                 break;
-            case "Station 4":
+            case "Station4":
                 Waiting4Label.setText(waiting + "");
                 break;
-            case "Station 5":
+            case "Station5":
                 Waiting5Label.setText(waiting + "");
                 break;
-            case "Station 6":
+            case "Station6":
                 Waiting6Label.setText(waiting + "");
                 break;
-            case "Station 7":
+            case "Station7":
                 Waiting7Label.setText(waiting + "");
                 break;
-            case "Station 8":
+            case "Station8":
                 Waiting8Label.setText(waiting + "");
                 break;
         }

@@ -1,11 +1,11 @@
 package introos;
 
-import gui.Visual;
+import gui.StatusLocks;
 
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
-public class Train implements Runnable
+public class TrainLocks implements Runnable
 {
     private String TRAIN_STATUS;      // Domain: IDLE, TRAVELING, LOADING
     private int TRAIN_NOOFSEATS;      // Maximum number of seats in the train
@@ -14,13 +14,13 @@ public class Train implements Runnable
     private String TRAIN_NAME;        // Optional name of Train object
     private String TRAIN_DOORSTATUS;  // Domain: OPEN, CLOSED
     private boolean TRAIN_ISRUNNING; // Is it running?
-    private final Station[] TRAIN_STATIONS;
-    private ArrayList<Robot> TRAIN_PASSENGERS;
-    private ArrayList<Robot> TRAIN_DROPOFFS;
+    private final StationLocks[] TRAIN_STATIONS;
+    private ArrayList<RobotLocks> TRAIN_PASSENGERS;
+    private ArrayList<RobotLocks> TRAIN_DROPOFFS;
     private int TRAIN_WHERE;
     private int trainID;
 
-    public Train(Semaphore TRAIN_AVAILABLESEATS, int TRAIN_NOOFSEATS, String TRAIN_NAME, Station[] TRAIN_STATIONS, int id)
+    public TrainLocks(Semaphore TRAIN_AVAILABLESEATS, int TRAIN_NOOFSEATS, String TRAIN_NAME, StationLocks[] TRAIN_STATIONS, int id)
     {
         this.TRAIN_STATUS = "IDLE";
         this.TRAIN_NOOFSEATS = TRAIN_NOOFSEATS;
@@ -36,7 +36,7 @@ public class Train implements Runnable
         this.trainID = id;
     }
 
-    public void AddPassenger(Robot passenger)
+    public void AddPassenger(RobotLocks passenger)
     {
         TRAIN_PASSENGERS.add(passenger);
     }
@@ -69,7 +69,7 @@ public class Train implements Runnable
     public void setTRAIN_NOOFPASSENGERS(int TRAIN_NOOFPASSENGERS)
     {
         this.TRAIN_NOOFPASSENGERS = TRAIN_NOOFPASSENGERS;
-        Visual.trainSeats.get(this.getTrainID()).setText(this.getTRAIN_NOOFPASSENGERS() + "/" + this.getTRAIN_NOOFSEATS());
+        StatusLocks.trainSeats.get(this.getTrainID()).setText(this.getTRAIN_NOOFPASSENGERS() + "/" + this.getTRAIN_NOOFSEATS());
     }
 
     public int getTRAIN_AVAILABLESEATS()

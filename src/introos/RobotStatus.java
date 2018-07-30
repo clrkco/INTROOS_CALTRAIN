@@ -1,5 +1,6 @@
 package introos;
 
-public enum RobotStatus {
+public enum RobotStatus
+{
     WAITING,ONBOARD
 }

@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class Visual extends JPanel implements ActionListener
+public class StatusSemaphores extends JPanel implements ActionListener
 {
     public static ArrayList<JPanel> trainPanels = new ArrayList(16);
     public static ArrayList<JLabel> trainName = new ArrayList(16);
@@ -22,7 +22,7 @@ public class Visual extends JPanel implements ActionListener
     Font statusHead = new Font("Tahoma", Font.BOLD, 13);
     Font numFont = new Font("Trebuchet MS", Font.BOLD, 14);
 
-    public Visual()
+    public StatusSemaphores()
     {
         this.setLayout(new MigLayout("", "[150, fill, grow]", "[150, fill,  grow]"));
         this.setBorder(BorderFactory.createTitledBorder(
