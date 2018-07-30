@@ -16,7 +16,7 @@ public class Station {
     private Semaphore STATION_MUTEX;
 
     public Station(String STATION_NAME) {
-        this.STATION_NAME = STATION_NAME;
+        //this.STATION_NAME = STATION_NAME;
     }
 
     public void station_init()
