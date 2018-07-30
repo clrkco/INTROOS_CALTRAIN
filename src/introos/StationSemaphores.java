@@ -11,271 +11,141 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.*;
 public class StationSemaphores
 {
-    private String STATION_STATUS;            // Domain: IDLE, OCCUPIED
-    private String STATION_NAME;              // Optional name for Station object
-    private int STATION_PASSENGERSWAITING;     // Number of Passengers waiting in the train station
-    private TrainSemaphores TRAIN_ONSTATION;            // The current Train object in the station
-    private boolean STATION_HASTRAIN;         // Does the station have a train?
-    private Lock STATION_LOCK;
-    private Condition STATION_CONDITION;
-    private ArrayList<Thread> STATION_ROBOTS;
-    private ArrayList<RobotSemaphores> ROBOT_OBJECT;
-    private Semaphore STATION_MUTEX;
+        private StationStatus stationStatus;            // Domain: IDLE, OCCUPIED
+        private String stationName;              // Optional name for Station object
+        private int stationPassengersWaiting;     // Number of Passengers waiting in the train station
+        private TrainSemaphores trainOnStation;            // The current Train object in the station
+        private boolean stationHasTrain;         // Does the station have a train?
+        private Lock stationLock;
+        private Condition stationCondition;
+        private ArrayList<Thread> stationRobots;
+        private ArrayList<RobotSemaphores> stationRobotPOJO;
+        private Semaphore stationMutex;
+        private int stationCapacity;
+        private int stationNumber;
 
-    public StationSemaphores(String STATION_NAME)
-    {
-        this.Station_Init(STATION_NAME);
-
-    }
-
-    public void GeneratePassengers(int STATION_PASSENGERSWAITING, int station_destination)
-    {
-        this.STATION_PASSENGERSWAITING += STATION_PASSENGERSWAITING;
-        SystemSemaphores.setWaiting(this.STATION_NAME, this.STATION_PASSENGERSWAITING);
-
-        for(int i = 0; i < STATION_PASSENGERSWAITING; i++)
-        {
-            RobotSemaphores passenger = new RobotSemaphores(this, station_destination);
-            ROBOT_OBJECT.add(passenger);
-            STATION_ROBOTS.add(new Thread(passenger));
-            STATION_ROBOTS.get(STATION_ROBOTS.size() - 1).start();
-        }
-    }
-
-    private void Station_Init(String STATION_NAME)
-    {
-        this.STATION_STATUS = "IDLE";
-        this.TRAIN_ONSTATION = null;
-        this.STATION_PASSENGERSWAITING = 0;
-        this.STATION_HASTRAIN = false;
-        this.STATION_NAME = STATION_NAME;
-        this.ROBOT_OBJECT = new ArrayList();
-        this.STATION_ROBOTS = new ArrayList();
-
-        this.lock_init();
-        this.cond_init();
-        this.mutex_init();
-    }
-
-    public synchronized void Station_Load_Train(int TRAIN_AVAILABLESEATS)
-    {
-        this.mutex_acquire();
-        SystemSemaphores.setOccupied(this.STATION_NAME, this.getTRAIN_ONSTATION().getTRAIN_NAME());
-
-        if(STATION_PASSENGERSWAITING == 0)
-        {
-            SystemSemaphores.setWaiting(this.STATION_NAME, STATION_PASSENGERSWAITING);
+        public StationSemaphores(String stationName, int stationCapacity, int stationNumber) {
+            this.stationName = stationName;
+            this.stationCapacity = stationCapacity;
+            this.stationNumber = stationNumber;
         }
 
-        else
+        public void station_init()
         {
-            this.notifyAll();
+            this.stationStatus = StationStatus.IDLE;
+            this.stationPassengersWaiting =0;
+            this.trainOnStation = null;
+            this.stationHasTrain = false;
+            this.stationLock = new ReentrantLock();
+            this.stationCondition = new ReentrantLock().newCondition();
+            this.stationRobots = new ArrayList<>();
+            this.stationRobotPOJO = new ArrayList<>();
+            this.stationMutex = new Semaphore(1);
         }
 
-        try
+        public void Auto_Generate_Robot(StationSemaphores[] stations)
         {
-            StatusSemaphores.trainStatus.get(TRAIN_ONSTATION.getTrainID()).setText("Arrived at " + CalTrain_Semaphores.stationNames[TRAIN_ONSTATION.getTRAIN_WHERE()]);
-            Thread.sleep(3000);
-        }
-
-        catch (InterruptedException ex)
-        {
-            Logger.getLogger(StationSemaphores.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        this.mutex_release();
-        SystemSemaphores.setFree(this.STATION_NAME);
-    }
-
-    public synchronized void Station_Wait_For_Train(RobotSemaphores passenger)
-    {
-        this.mutex_acquire();
-        this.mutex_release();
-
-        try
-        {
-            wait();
-        }
-
-        catch (InterruptedException ex)
-        {
-            Logger.getLogger(StationSemaphores.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        this.Station_On_Board(passenger);
-    }
-
-    public void Station_On_Board(RobotSemaphores passenger)
-    {
-        this.mutex_acquire();
-
-        try
-        {
-            if(TRAIN_ONSTATION.getTRAIN_AVAILABLESEATS() == 0)
+            if(stationPassengersWaiting == 0)
             {
-                this.mutex_release();
+                System.out.println("No passengers waiting.");
+                int destinationStationNumber=stationNumber;
+                Random random = new Random();
+                Random stationRandom = new Random();
+                Boolean sameStationNumber;
 
-                Station_Wait_For_Train(passenger);
+                for(int i =0; i < (random.nextInt(stationCapacity)+1); i++)
+                {
+                    sameStationNumber=true;
+                    while(sameStationNumber)
+                    {
+                        destinationStationNumber = stationRandom.nextInt(stations.length);
+                        if(destinationStationNumber!=stationNumber)
+                            sameStationNumber=false;
+                    }
+                    RobotSemaphores robot = new RobotSemaphores(this, stations[destinationStationNumber]);
+                    System.out.println("Destination of robot " + i + " = " + stations[destinationStationNumber].getStationName());
+                    stationRobots.add(new Thread(robot));
+                    stationRobots.get(stationRobots.size()-1).start();
+                    stationRobotPOJO.add(robot);
+                    stationPassengersWaiting++;
+                }
+                System.out.println("POJO SIZE = " + stationRobotPOJO.size());
             }
+        }
 
+        public void Station_On_Board(RobotSemaphores robot) throws InterruptedException {
+            //        System.out.println("Train on Station id: " + trainOnStation);
+            this.stationMutex.acquire();
+            try {
+                if (this.trainOnStation.getTrainMutex().availablePermits() == 0) {
+                    this.stationMutex.release();
+                    Station_Wait_For_Train(robot);
+                } else {
+                    System.out.println("in here");
+                    trainOnStation.getTrainMutex().acquire();
+                    this.stationPassengersWaiting--;
+                    robot.setRobotStatus(RobotStatus.ONBOARD);
+                    trainOnStation.AddPassenger(robot);
+                    stationRobotPOJO.remove(robot);
+                }
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+            this.stationMutex.release();
+        }
+
+        public synchronized void Station_Load_Train() throws InterruptedException
+        {
+            this.stationMutex.acquire();
+            trainOnStation.SetDoorStatus(DoorStatus.OPEN);
+            trainOnStation.DropPassenger();
+            //        System.out.println(stationRobotPOJO);
+            //        System.out.println(stationPassengersWaiting);
+            if(stationPassengersWaiting==0)
+            {
+
+            }
+            else if(trainOnStation.getTrainMutex().availablePermits() == 0)
+            {
+                //no seats on train available
+            }
             else
             {
-                int shit = this.TRAIN_ONSTATION.getTRAIN_NOOFPASSENGERS();
-
-                try
-                {
-                    TRAIN_ONSTATION.getSemaphore().acquire();
-
-                }
-
-                catch (InterruptedException ex)
-                {
-                    Logger.getLogger(StationSemaphores.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-                this.STATION_PASSENGERSWAITING--;
-                SystemSemaphores.setWaiting(STATION_NAME, STATION_PASSENGERSWAITING);
-                int currNoOfPassengers = TRAIN_ONSTATION.getTRAIN_NOOFPASSENGERS() + 1;
-                TRAIN_ONSTATION.setTRAIN_NOOFPASSENGERS(shit + 1);
-
-                TRAIN_ONSTATION.AddPassenger(passenger);
-                ROBOT_OBJECT.remove(passenger);
-
-                System.out.println(passenger.getROBOT_NAME() + " boarded the train");
-                System.out.println("Number of available seats of train: " + TRAIN_ONSTATION.getTRAIN_AVAILABLESEATS() + " Train: " + TRAIN_ONSTATION.getTRAIN_NAME());
-                System.out.println("Number of Passengers = " + TRAIN_ONSTATION.getTRAIN_NOOFPASSENGERS());
+                System.out.println("notified passengers");
+                this.notifyAll(); //wake all waiting robot threads
             }
+            Thread.sleep(3000);
+            trainOnStation.SetDoorStatus(DoorStatus.CLOSED);
+            this.stationMutex.release();
         }
 
-        finally
+        public synchronized void Station_Wait_For_Train(RobotSemaphores robot) throws InterruptedException
         {
-
+            this.stationMutex.acquire();
+            this.stationMutex.release();
+            wait();
+            this.Station_On_Board(robot);
         }
 
-        this.mutex_release();
-    }
-
-    public void mutex_init()
-    {
-        this.STATION_MUTEX = new Semaphore(1);
-    }
-
-    public void mutex_acquire()
-    {
-        try
-        {
-            this.STATION_MUTEX.acquire();
+        public TrainSemaphores getTrainOnStation() {
+            return trainOnStation;
         }
 
-        catch (InterruptedException ex)
-        {
-            Logger.getLogger(StationSemaphores.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void mutex_release()
-    {
-        this.STATION_MUTEX.release();
-    }
-
-    public void lock_init()
-    {
-        STATION_LOCK = new ReentrantLock();
-    }
-
-    public void lock_acquire()
-    {
-        STATION_LOCK.lock();
-    }
-
-    public void lock_release()
-    {
-        STATION_LOCK.unlock();
-    }
-
-    public  void cond_init()
-    {
-        STATION_CONDITION = STATION_LOCK.newCondition();
-    }
-
-    public void cond_wait()
-    {
-        try
-        {
-            STATION_CONDITION.await();
+        public void setTrainOnStation(TrainSemaphores trainOnStation) {
+            this.trainOnStation = trainOnStation;
         }
 
-        catch (InterruptedException ex)
-        {
-            Logger.getLogger(StationSemaphores.class.getName()).log(Level.SEVERE, null, ex);
+        public int getStationNumber() {
+            return stationNumber;
+        }
+
+        public String getStationName() {
+            return stationName;
         }
     }
-
-    public  void cond_signal()
-    {
-        STATION_CONDITION.signal();
-    }
-
-    public void cond_broadcast()
-    {
-        STATION_CONDITION.signalAll();
-    }
-
-    public String getSTATION_STATUS()
-    {
-        return STATION_STATUS;
-    }
-
-    public void setSTATION_STATUS(String STATION_STATUS)
-    {
-        this.STATION_STATUS = STATION_STATUS;
-    }
-
-    public String getSTATION_NAME()
-    {
-        return STATION_NAME;
-    }
-
-    public void setSTATION_NAME(String STATION_NAME)
-    {
-        this.STATION_NAME = STATION_NAME;
-    }
-
-    public int getSTATION_PASSNGERSWAITING()
-    {
-        return STATION_PASSENGERSWAITING;
-    }
-
-    public void setSTATION_PASSNGERSWAITING(int STATION_PASSNGERSWAITING)
-    {
-        this.STATION_PASSENGERSWAITING = STATION_PASSNGERSWAITING;
-    }
-
-    public TrainSemaphores getTRAIN_ONSTATION()
-    {
-        return TRAIN_ONSTATION;
-    }
-
-    public void setTRAIN_ONSTATION(TrainSemaphores TRAIN_ONSTATION)
-    {
-        this.TRAIN_ONSTATION = TRAIN_ONSTATION;
-    }
-
-    public void Station_Add_Passengers()
-    {
-        this.STATION_PASSENGERSWAITING += NumberGenerator.GENERATE_PASSENGER_INFLUX();
-    }
-
-    public boolean isSTATION_HASTRAIN()
-    {
-        return STATION_HASTRAIN;
-    }
-
-    public void setSTATION_HASTRAIN(boolean STATION_HASTRAIN)
-    {
-        this.STATION_HASTRAIN = STATION_HASTRAIN;
-    }
-}
