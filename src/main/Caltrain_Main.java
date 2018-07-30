@@ -17,8 +17,11 @@ public class Caltrain_Main {
             stations[i] = new Station(stationNames[i],stationCapacity,i);
             stations[i].station_init();
         }
+
         trains[0] = new Thread(new Train(10,1,stations)) ;
         trains[0].start();
+        trains[1] = new Thread(new Train(10,2,stations)) ;
+        trains[1].start();
         stations[1].Auto_Generate_Robot(stations);
     }
 }

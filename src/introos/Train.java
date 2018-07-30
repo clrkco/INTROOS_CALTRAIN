@@ -33,11 +33,11 @@ public class Train implements Runnable{
         {
             this.stations[this.trainLocation].setTrainOnStation(this);
             try {
-                System.out.println("permits available: " + trainMutex.availablePermits());
+                System.out.println(trainID + " = permits available: " + trainMutex.availablePermits());
                 System.out.println(stations[trainLocation].getStationName());
 //                this.DropPassenger();
                 this.stations[this.trainLocation].Station_Load_Train();
-                trainLocation = (trainLocation+1)%(stations.length-1);
+                trainLocation = (trainLocation+1)%(stations.length);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
