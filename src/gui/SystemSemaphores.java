@@ -336,11 +336,11 @@ public class SystemSemaphores extends JPanel implements ActionListener
         {
             case "Station1":
                 Station1Panel.setBackground(Color.white);
-                Station1Label.setText(stationName);
+//                Station1Label.setText(stationName);
                 break;
             case "TrackA":
                 TrackAPanel.setBackground(Color.white);
-                TrackALabel.setText(stationName);
+//                TrackALabel.setText(stationName);
                 break;
             case "Station2":
                 Station2Panel.setBackground(Color.white);

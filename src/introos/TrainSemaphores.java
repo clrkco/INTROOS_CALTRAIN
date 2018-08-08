@@ -45,6 +45,11 @@ public class TrainSemaphores implements Runnable{
         }
     }
 
+    public int getTrainID()
+    {
+        return trainID;
+    }
+
     public Semaphore getTrainMutex()
     {
         return trainMutex;
@@ -83,4 +88,13 @@ public class TrainSemaphores implements Runnable{
         passengers.removeAll(dropoff);
         trainMutex.release(dropoff.size());
     }
+
+    public int getNumberOfPassengers(){
+        return numberOfSeats - trainMutex.availablePermits();
+    }
+    public int getNumberOfSeats()
+    {
+        return numberOfSeats;
+    }
+
 }

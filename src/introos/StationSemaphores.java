@@ -22,8 +22,6 @@ public class StationSemaphores
         private int stationPassengersWaiting;     // Number of Passengers waiting in the train station
         private TrainSemaphores trainOnStation;            // The current Train object in the station
         private boolean stationHasTrain;         // Does the station have a train?
-        private Lock stationLock;
-        private Condition stationCondition;
         private ArrayList<Thread> stationRobots;
         private ArrayList<RobotSemaphores> stationRobotPOJO;
         private Semaphore stationMutex;
@@ -42,8 +40,6 @@ public class StationSemaphores
             this.stationPassengersWaiting =0;
             this.trainOnStation = null;
             this.stationHasTrain = false;
-            this.stationLock = new ReentrantLock();
-            this.stationCondition = new ReentrantLock().newCondition();
             this.stationRobots = new ArrayList<>();
             this.stationRobotPOJO = new ArrayList<>();
             this.stationMutex = new Semaphore(1);
@@ -102,6 +98,7 @@ public class StationSemaphores
 
         public synchronized void Station_Load_Train() throws InterruptedException
         {
+            SystemSemaphores.setOccupied(stationName,Integer.toString(trainOnStation.getTrainID()));
             this.stationMutex.acquire();
             trainOnStation.SetDoorStatus(DoorStatus.OPEN);
             trainOnStation.DropPassenger();
@@ -123,6 +120,7 @@ public class StationSemaphores
             Thread.sleep(3000);
             trainOnStation.SetDoorStatus(DoorStatus.CLOSED);
             this.stationMutex.release();
+            SystemSemaphores.setFree(stationName);
         }
 
         public synchronized void Station_Wait_For_Train(RobotSemaphores robot) throws InterruptedException
