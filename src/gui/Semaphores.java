@@ -10,8 +10,8 @@ public class Semaphores extends JFrame
     public Semaphores()
     {
         this.setTitle("CalTrainII Automation (Semaphores)");
-        this.setSize(1200, 600);
-        this.setMinimumSize(new Dimension(1200, 600));
+        this.setSize(1200, 800);
+        this.setMinimumSize(new Dimension(1200, 800));
         this.setLocation(10, 10);
         this.setVisible(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

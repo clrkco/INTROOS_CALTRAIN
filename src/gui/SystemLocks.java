@@ -336,67 +336,67 @@ public class SystemLocks extends JPanel implements ActionListener
         {
             case "Station1":
                 Station1Panel.setBackground(Color.white);
-                Station1Label.setText(stationName);
+                Station1Label.setText("");
                 break;
             case "TrackA":
                 TrackAPanel.setBackground(Color.white);
-                TrackALabel.setText(stationName);
+                TrackALabel.setText("");
                 break;
             case "Station2":
                 Station2Panel.setBackground(Color.white);
-                Station2Label.setText(stationName);
+                Station2Label.setText("");
                 break;
             case "TrackB":
                 TrackBPanel.setBackground(Color.white);
-                TrackBLabel.setText(stationName);
+                TrackBLabel.setText("");
                 break;
             case "Station3":
                 Station3Panel.setBackground(Color.white);
-                Station3Label.setText(stationName);
+                Station3Label.setText("");
                 break;
             case "TrackC":
                 TrackCPanel.setBackground(Color.white);
-                TrackCLabel.setText(stationName);
+                TrackCLabel.setText("");
                 break;
             case "Station4":
                 Station4Panel.setBackground(Color.white);
-                Station4Label.setText(stationName);
+                Station4Label.setText("");
                 break;
             case "TrackD":
                 TrackDPanel.setBackground(Color.white);
-                TrackDLabel.setText(stationName);
+                TrackDLabel.setText("");
                 break;
             case "Station5":
                 Station5Panel.setBackground(Color.white);
-                Station5Label.setText(stationName);
+                Station5Label.setText("");
                 break;
             case "TrackE":
                 TrackEPanel.setBackground(Color.white);
-                TrackELabel.setText(stationName);
+                TrackELabel.setText("");
                 break;
             case "Station6":
                 Station6Panel.setBackground(Color.white);
-                Station6Label.setText(stationName);
+                Station6Label.setText("");
                 break;
             case "TrackF":
                 TrackFPanel.setBackground(Color.white);
-                TrackFLabel.setText(stationName);
+                TrackFLabel.setText("");
                 break;
             case "Station7":
                 Station7Panel.setBackground(Color.white);
-                Station7Label.setText(stationName);
+                Station7Label.setText("");
                 break;
             case "TrackG":
                 TrackGPanel.setBackground(Color.white);
-                TrackGLabel.setText(stationName);
+                TrackGLabel.setText("");
                 break;
             case "Station8":
                 Station8Panel.setBackground(Color.white);
-                Station8Label.setText(stationName);
+                Station8Label.setText("");
                 break;
             case "TrackH":
                 TrackHPanel.setBackground(Color.white);
-                TrackHLabel.setText(stationName);
+                TrackHLabel.setText("");
                 break;
         }
     }
