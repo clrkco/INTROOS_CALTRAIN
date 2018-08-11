@@ -76,7 +76,6 @@ public class StationSemaphores
         }
 
         public void Station_On_Board(RobotSemaphores robot) throws InterruptedException {
-            //        System.out.println("Train on Station id: " + trainOnStation);
             this.stationMutex.acquire();
             try {
                 if (this.trainOnStation.getTrainMutex().availablePermits() == 0) {
@@ -86,6 +85,7 @@ public class StationSemaphores
                     System.out.println("in here");
                     trainOnStation.getTrainMutex().acquire();
                     this.stationPassengersWaiting--;
+                    SystemSemaphores.setWaiting(this.stationName,stationPassengersWaiting);
                     robot.setRobotStatus(RobotStatus.ONBOARD);
                     trainOnStation.AddPassenger(robot);
                     stationRobotPOJO.remove(robot);
@@ -146,4 +146,9 @@ public class StationSemaphores
         public String getStationName() {
             return stationName;
         }
+
+    public int getStationPassengersWaiting()
+    {
+        return stationPassengersWaiting;
     }
+}

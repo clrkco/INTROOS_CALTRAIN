@@ -1,5 +1,6 @@
 package gui;
 
+import introos.StationSemaphores;
 import main.CalTrain_Semaphores;
 import net.miginfocom.swing.MigLayout;
 
@@ -163,12 +164,40 @@ public class ControlSemaphores extends JPanel implements ActionListener
 
         else if(e.getSource() == button_add_passengers)
         {
-
-
-
-
-
-
+            if(textfield_passengers_station.getText().equals(""))
+            {
+                JOptionPane.showMessageDialog(ControlSemaphores.this, "Please enter passenger number!", "Error",
+                                              JOptionPane.ERROR_MESSAGE);
+            }
+            else if(textfield_passengers_station.getText().matches("\\d+"))
+            {
+                int stationNumber = Integer.parseInt(textfield_passengers_station.getText());
+                StringBuilder stringBuilder = new StringBuilder();
+                Integer stationWaiting;
+                if(stationNumber<1||stationNumber>8)
+                {
+                    JOptionPane.showMessageDialog(ControlSemaphores.this, "Station does not exist!", "Error",
+                                                  JOptionPane.ERROR_MESSAGE);
+                }
+                else
+                {
+                    stringBuilder.append("Station").append(stationNumber);
+                    for(int i=0; i<CalTrain_Semaphores.stations.length;i++)
+                    {
+                        if(CalTrain_Semaphores.stations[i].getStationName().equals(stringBuilder.toString()))
+                        {
+                            CalTrain_Semaphores.stations[i].Auto_Generate_Robot(CalTrain_Semaphores.stations);
+                            stationWaiting = CalTrain_Semaphores.stations[i].getStationPassengersWaiting();
+                            SystemSemaphores.setWaiting(stringBuilder.toString(),stationWaiting);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(ControlSemaphores.this, "Integers only!", "Error",
+                                              JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }
