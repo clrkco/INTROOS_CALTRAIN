@@ -25,7 +25,7 @@ public class ControlSemaphores extends JPanel implements ActionListener
             textfield_passengers_station;
 
     JButton
-            button_restart_program,
+            button_exit_program,
             button_add_train,
             button_add_passengers;
 
@@ -65,12 +65,12 @@ public class ControlSemaphores extends JPanel implements ActionListener
         textfield_passengers_station = new JTextField(10);
         textfield_passengers_station.setFont(fieldFont);
 
-        button_restart_program = new JButton("Restart Program");
-        button_restart_program.setFocusPainted(false);
-        button_restart_program.setFont(buttonFont);
-        button_restart_program.setForeground(Color.white);
-        button_restart_program.setBackground(Color.decode("#04bbaa"));
-        button_restart_program.addActionListener(this);
+        button_exit_program = new JButton("Exit Program");
+        button_exit_program.setFocusPainted(false);
+        button_exit_program.setFont(buttonFont);
+        button_exit_program.setForeground(Color.white);
+        button_exit_program.setBackground(Color.decode("#04bbaa"));
+        button_exit_program.addActionListener(this);
 
         button_add_train = new JButton("Add Train");
         button_add_train.setFocusPainted(false);
@@ -95,7 +95,7 @@ public class ControlSemaphores extends JPanel implements ActionListener
         this.add(label_train_count, "center");
         this.add(textfield_train_seats, "center");
         this.add(textfield_passengers_station, "center, wrap 20");
-        this.add(button_restart_program, "growx, pushx");
+        this.add(button_exit_program, "growx, pushx");
         this.add(button_add_train, "growx, pushx");
         this.add(button_add_passengers, "growx, pushx");
     }
@@ -129,9 +129,9 @@ public class ControlSemaphores extends JPanel implements ActionListener
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        if(e.getSource() == button_restart_program)
+        if(e.getSource() == button_exit_program)
         {
-
+            System.exit(0);
         }
 
         else if(e.getSource() == button_add_train)
