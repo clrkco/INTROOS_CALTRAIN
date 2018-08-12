@@ -61,7 +61,7 @@ public class StationSemaphores
                     while(sameStationNumber)
                     {
                         destinationStationNumber = stationRandom.nextInt(stations.length);
-                        if(destinationStationNumber!=stationNumber)
+                        if(destinationStationNumber!=stationNumber&&(destinationStationNumber%2)==0)
                             sameStationNumber=false;
                     }
                     RobotSemaphores robot = new RobotSemaphores(this, stations[destinationStationNumber]);
@@ -100,10 +100,11 @@ public class StationSemaphores
         {
             SystemSemaphores.setOccupied(stationName,Integer.toString(trainOnStation.getTrainID()));
             this.stationMutex.acquire();
+
             trainOnStation.SetDoorStatus(DoorStatus.OPEN);
             trainOnStation.DropPassenger();
-            //        System.out.println(stationRobotPOJO);
-            //        System.out.println(stationPassengersWaiting);
+            StatusSemaphores.trainSeats.get(trainOnStation.getTrainID()).setText(Integer.toString(trainOnStation.getNumberOfPassengers()) + "/" + trainOnStation.getNumberOfSeats());
+
             if(stationPassengersWaiting==0)
             {
 
