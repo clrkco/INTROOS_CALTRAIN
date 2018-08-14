@@ -2,10 +2,8 @@ package introos;
 
 import gui.StatusLocks;
 import gui.SystemLocks;
-import main.CalTrain_Semaphores;
-
 import java.util.ArrayList;
-import java.util.concurrent.Semaphore;
+import java.util.Random;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -14,268 +12,172 @@ import java.util.logging.Logger;
 
 public class StationLocks
 {
-    private String STATION_STATUS;            // Domain: IDLE, OCCUPIED
-    private String STATION_NAME;              // Optional name for Station object
-    private int STATION_PASSENGERSWAITING;     // Number of Passengers waiting in the train station
-    private TrainLocks TRAIN_ONSTATION;            // The current Train object in the station
-    private boolean STATION_HASTRAIN;         // Does the station have a train?
-    private Lock STATION_LOCK;
-    private Condition STATION_CONDITION;
-    private ArrayList<Thread> STATION_ROBOTS;
-    private ArrayList<RobotLocks> ROBOT_OBJECT;
-    private Semaphore STATION_MUTEX;
+    private StationStatus stationStatus;            // Domain: IDLE, OCCUPIED
+    private String stationName;              // Optional name for Station object
+    private int stationPassengersWaiting;     // Number of Passengers waiting in the train station
+    private TrainLocks trainOnStation;            // The current Train object in the station
+    private boolean stationHasTrain;         // Does the station have a train?
+    private ArrayList<Thread> stationRobots;
+    private ArrayList<RobotLocks> stationRobotPOJO;
+    private int stationCapacity;
+    private int stationNumber;
+    public int station_lock;
 
-    public StationLocks(String STATION_NAME)
-    {
-        this.Station_Init(STATION_NAME);
-
+    public StationLocks(String stationName, int stationCapacity, int stationNumber) {
+        this.stationName = stationName;
+        this.stationCapacity = stationCapacity;
+        this.stationNumber = stationNumber;
     }
 
-    public void GeneratePassengers(int STATION_PASSENGERSWAITING, int station_destination)
+    public void station_init()
     {
-        this.STATION_PASSENGERSWAITING += STATION_PASSENGERSWAITING;
-        SystemLocks.setWaiting(this.STATION_NAME, this.STATION_PASSENGERSWAITING);
-
-        for(int i = 0; i < STATION_PASSENGERSWAITING; i++)
-        {
-            RobotLocks passenger = new RobotLocks(this, station_destination);
-            ROBOT_OBJECT.add(passenger);
-            STATION_ROBOTS.add(new Thread(passenger));
-            STATION_ROBOTS.get(STATION_ROBOTS.size() - 1).start();
-        }
-    }
-
-    private void Station_Init(String STATION_NAME)
-    {
-        this.STATION_STATUS = "IDLE";
-        this.TRAIN_ONSTATION = null;
-        this.STATION_PASSENGERSWAITING = 0;
-        this.STATION_HASTRAIN = false;
-        this.STATION_NAME = STATION_NAME;
-        this.ROBOT_OBJECT = new ArrayList();
-        this.STATION_ROBOTS = new ArrayList();
-
+        this.stationStatus = StationStatus.IDLE;
+        this.stationPassengersWaiting =0;
+        this.trainOnStation = null;
+        this.stationHasTrain = false;
+        this.stationRobots = new ArrayList<>();
+        this.stationRobotPOJO = new ArrayList<>();
         this.lock_init();
-        this.cond_init();
-        this.mutex_init();
-    }
-
-    public synchronized void Station_Load_Train(int TRAIN_AVAILABLESEATS)
-    {
-        this.mutex_acquire();
-        SystemLocks.setOccupied(this.STATION_NAME, this.getTRAIN_ONSTATION().getTRAIN_NAME());
-
-        if(STATION_PASSENGERSWAITING == 0)
-        {
-            SystemLocks.setWaiting(this.STATION_NAME, STATION_PASSENGERSWAITING);
-        }
-
-        else
-        {
-            this.notifyAll();
-        }
-
-        try
-        {
-            StatusLocks.trainStatus.get(TRAIN_ONSTATION.getTrainID()).setText("Arrived at " + CalTrain_Semaphores.stationNames[TRAIN_ONSTATION.getTRAIN_WHERE()]);
-            Thread.sleep(3000);
-        }
-
-        catch (InterruptedException ex)
-        {
-            Logger.getLogger(StationLocks.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        this.mutex_release();
-        SystemLocks.setFree(this.STATION_NAME);
-    }
-
-    public synchronized void Station_Wait_For_Train(RobotLocks passenger)
-    {
-        this.mutex_acquire();
-        this.mutex_release();
-
-        try
-        {
-            wait();
-        }
-
-        catch (InterruptedException ex)
-        {
-            Logger.getLogger(StationLocks.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        this.Station_On_Board(passenger);
-    }
-
-    public void Station_On_Board(RobotLocks passenger)
-    {
-        this.mutex_acquire();
-
-        try
-        {
-            if(TRAIN_ONSTATION.getTRAIN_AVAILABLESEATS() == 0)
-            {
-                this.mutex_release();
-
-                Station_Wait_For_Train(passenger);
-            }
-
-            else
-            {
-                int shit = this.TRAIN_ONSTATION.getTRAIN_NOOFPASSENGERS();
-
-                try
-                {
-                    TRAIN_ONSTATION.getSemaphore().acquire();
-
-                }
-
-                catch (InterruptedException ex)
-                {
-                    Logger.getLogger(StationLocks.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-                this.STATION_PASSENGERSWAITING--;
-                SystemLocks.setWaiting(STATION_NAME, STATION_PASSENGERSWAITING);
-                int currNoOfPassengers = TRAIN_ONSTATION.getTRAIN_NOOFPASSENGERS() + 1;
-                TRAIN_ONSTATION.setTRAIN_NOOFPASSENGERS(shit + 1);
-
-                TRAIN_ONSTATION.AddPassenger(passenger);
-                ROBOT_OBJECT.remove(passenger);
-
-                System.out.println(passenger.getROBOT_NAME() + " boarded the train");
-                System.out.println("Number of available seats of train: " + TRAIN_ONSTATION.getTRAIN_AVAILABLESEATS() + " Train: " + TRAIN_ONSTATION.getTRAIN_NAME());
-                System.out.println("Number of Passengers = " + TRAIN_ONSTATION.getTRAIN_NOOFPASSENGERS());
-            }
-        }
-
-        finally
-        {
-
-        }
-
-        this.mutex_release();
-    }
-
-    public void mutex_init()
-    {
-        this.STATION_MUTEX = new Semaphore(1);
-    }
-
-    public void mutex_acquire()
-    {
-        try
-        {
-            this.STATION_MUTEX.acquire();
-        }
-
-        catch (InterruptedException ex)
-        {
-            Logger.getLogger(StationLocks.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void mutex_release()
-    {
-        this.STATION_MUTEX.release();
     }
 
     public void lock_init()
     {
-        STATION_LOCK = new ReentrantLock();
+        station_lock = 1;
     }
 
-    public void lock_acquire()
+    public int lock_acquire()
     {
-        STATION_LOCK.lock();
+        if(station_lock == 0)
+            return 0;
+        else
+        {
+            station_lock = 0;
+            return 1;
+        }
     }
 
     public void lock_release()
     {
-        STATION_LOCK.unlock();
+        station_lock = 1;
     }
 
-    public  void cond_init()
+    public void Auto_Generate_Robot(StationLocks[] stations)
     {
-        STATION_CONDITION = STATION_LOCK.newCondition();
-    }
-
-    public void cond_wait()
-    {
-        try
+        if(stationPassengersWaiting == 0)
         {
-            STATION_CONDITION.await();
-        }
+            System.out.println("No passengers waiting.");
+            int destinationStationNumber=stationNumber;
+            Random random = new Random();
+            Random stationRandom = new Random();
+            Boolean sameStationNumber;
 
-        catch (InterruptedException ex)
+            for(int i =0; i < (random.nextInt(stationCapacity)+1); i++)
+            {
+                sameStationNumber=true;
+                while(sameStationNumber)
+                {
+                    destinationStationNumber = stationRandom.nextInt(stations.length);
+                    if(destinationStationNumber!=stationNumber&&(destinationStationNumber%2)==0)
+                        sameStationNumber=false;
+                }
+                RobotLocks robot = new RobotLocks(this, stations[destinationStationNumber]);
+                System.out.println("Destination of robot " + i + " = " + stations[destinationStationNumber].getStationName());
+                stationRobots.add(new Thread(robot));
+                stationRobots.get(stationRobots.size()-1).start();
+                stationRobotPOJO.add(robot);
+                stationPassengersWaiting++;
+            }
+            System.out.println("POJO SIZE = " + stationRobotPOJO.size());
+        }
+    }
+
+    public void Station_On_Board(RobotLocks robot) throws InterruptedException {
+        if(this.lock_acquire() == 1)
         {
-            Logger.getLogger(StationLocks.class.getName()).log(Level.SEVERE, null, ex);
+            try {
+                if (this.trainOnStation.getTrainLock() == 0) {
+                    this.lock_release();
+                    Station_Wait_For_Train(robot);
+                } else {
+                    System.out.println("in here");
+                    trainOnStation.lock_acquire();
+                    this.stationPassengersWaiting--;
+                    SystemLocks.setWaiting(this.stationName, stationPassengersWaiting);
+                    robot.setRobotStatus(RobotStatus.ONBOARD);
+                    trainOnStation.AddPassenger(robot);
+                    stationRobotPOJO.remove(robot);
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+            this.lock_release();
+        }
+        else
+        {
+            //wait
         }
     }
 
-    public  void cond_signal()
+    public synchronized void Station_Load_Train() throws InterruptedException
     {
-        STATION_CONDITION.signal();
+        SystemLocks.setOccupied(stationName,Integer.toString(trainOnStation.getTrainID()));
+        if(this.lock_acquire() == 1)
+        {
+
+            trainOnStation.SetDoorStatus(DoorStatus.OPEN);
+            trainOnStation.DropPassenger();
+            StatusLocks.trainSeats.get(trainOnStation.getTrainID()).setText(Integer.toString(trainOnStation.getNumberOfPassengers()) + "/" + trainOnStation.getNumberOfSeats());
+
+            if (stationPassengersWaiting == 0)
+            {
+
+            }
+            else if (trainOnStation.getTrainLock() == 0)
+            {
+                //no seats on train available
+            }
+            else {
+                System.out.println("notified passengers");
+                this.notifyAll(); //wake all waiting robot threads
+            }
+            Thread.sleep(3000);
+            trainOnStation.SetDoorStatus(DoorStatus.CLOSED);
+            this.lock_release();
+            SystemLocks.setFree(stationName);
+        }
+        else
+        {
+            //wait
+        }
     }
 
-    public void cond_broadcast()
+    public synchronized void Station_Wait_For_Train(RobotLocks robot) throws InterruptedException
     {
-        STATION_CONDITION.signalAll();
+        this.lock_acquire();
+        this.lock_release();
+        wait();
+        this.Station_On_Board(robot);
     }
 
-    public String getSTATION_STATUS()
-    {
-        return STATION_STATUS;
+    public TrainLocks getTrainOnStation() {
+        return trainOnStation;
     }
 
-    public void setSTATION_STATUS(String STATION_STATUS)
-    {
-        this.STATION_STATUS = STATION_STATUS;
+    public void setTrainOnStation(TrainLocks trainOnStation) {
+        this.trainOnStation = trainOnStation;
     }
 
-    public String getSTATION_NAME()
-    {
-        return STATION_NAME;
+    public int getStationNumber() {
+        return stationNumber;
     }
 
-    public void setSTATION_NAME(String STATION_NAME)
-    {
-        this.STATION_NAME = STATION_NAME;
+    public String getStationName() {
+        return stationName;
     }
 
-    public int getSTATION_PASSNGERSWAITING()
+    public int getStationPassengersWaiting()
     {
-        return STATION_PASSENGERSWAITING;
+        return stationPassengersWaiting;
     }
 
-    public void setSTATION_PASSNGERSWAITING(int STATION_PASSNGERSWAITING)
-    {
-        this.STATION_PASSENGERSWAITING = STATION_PASSNGERSWAITING;
-    }
-
-    public TrainLocks getTRAIN_ONSTATION()
-    {
-        return TRAIN_ONSTATION;
-    }
-
-    public void setTRAIN_ONSTATION(TrainLocks TRAIN_ONSTATION)
-    {
-        this.TRAIN_ONSTATION = TRAIN_ONSTATION;
-    }
-
-    public void Station_Add_Passengers()
-    {
-        this.STATION_PASSENGERSWAITING += NumberGenerator.GENERATE_PASSENGER_INFLUX();
-    }
-
-    public boolean isSTATION_HASTRAIN()
-    {
-        return STATION_HASTRAIN;
-    }
-
-    public void setSTATION_HASTRAIN(boolean STATION_HASTRAIN)
-    {
-        this.STATION_HASTRAIN = STATION_HASTRAIN;
-    }
 }

@@ -3,35 +3,44 @@ package main;
 import gui.StatusLocks;
 import introos.StationLocks;
 import introos.TrainLocks;
-
-import java.util.concurrent.Semaphore;
+import java.util.Random;
 
 public class CalTrain_Locks
 {
     static Thread[] trainThreads = new Thread[16];
-    public static StationLocks[] stations = new StationLocks[8];
+    public static StationLocks[] stations = new StationLocks[16];
     public static int numOfTrains = 0;
-    static Semaphore availableSeats;
-
-    public static String[] stationNames = {"Station 1", "Station 2", "Station 3", "Station 4", "Station 5", "Station 6", "Station 7", "Station 8"};
+    static int availableSeats;
+    Random random = new Random();
+    public static String[] stationNames = {"Station1", "TrackA", "Station2", "TrackB", "Station3", "TrackC", "Station4", "TrackD",
+                                           "Station5", "TrackE", "Station6", "TrackF", "Station7", "TrackG", "Station8", "TrackH"};
 
     public CalTrain_Locks()
     {
-        for(int i = 0; i < 8; i++)
+        int stationCapacity;
+        for(int i = 0; i < 16; i++)
         {
-            StationLocks station = new StationLocks(stationNames[i]);
-            stations[i] = station;
+            stationCapacity = random.nextInt(41)+5;
+            if(i%2==0)
+            {
+                stations[i] = new StationLocks(stationNames[i],stationCapacity,i);
+            }
+            else
+            {
+                stations[i] = new StationLocks(stationNames[i],0,i);
+            }
+            stations[i].station_init();
         }
     }
 
     public static void dispatchTrain(String name, int seats, int id)
     {
-        availableSeats = new Semaphore(seats, true);
+        availableSeats = seats;
 
-        TrainLocks newTrain = new TrainLocks(availableSeats, seats, name, stations, id);
+        TrainLocks newTrain = new TrainLocks(seats,id,stations);
 
-        StatusLocks.trainName.get(numOfTrains).setText(newTrain.getTRAIN_NAME());
-        StatusLocks.trainSeats.get(numOfTrains).setText(newTrain.getTRAIN_NOOFPASSENGERS() + "/" + newTrain.getTRAIN_NOOFSEATS());
+        StatusLocks.trainName.get(numOfTrains).setText(Integer.toString(newTrain.getTrainID()));
+        StatusLocks.trainSeats.get(numOfTrains).setText(newTrain.getNumberOfPassengers() + "/" + newTrain.getNumberOfSeats());
         StatusLocks.trainStatusHead.get(numOfTrains).setText("<html><u>Status:</u></html>");
         StatusLocks.trainStatus.get(numOfTrains).setText("");
 

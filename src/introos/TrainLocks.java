@@ -1,120 +1,66 @@
 package introos;
 
-import gui.StatusLocks;
 
 import java.util.ArrayList;
-import java.util.concurrent.Semaphore;
 
 public class TrainLocks implements Runnable
 {
-    private String TRAIN_STATUS;      // Domain: IDLE, TRAVELING, LOADING
-    private int TRAIN_NOOFSEATS;      // Maximum number of seats in the train
-    private int TRAIN_NOOFPASSENGERS; // Number of Passengers in the train
-    private Semaphore TRAIN_AVAILABLESEATS; // Computer by subtracting TRAIN_NOOFSEATS and TRAIN_AVAILABLESEATS
-    private String TRAIN_NAME;        // Optional name of Train object
-    private String TRAIN_DOORSTATUS;  // Domain: OPEN, CLOSED
-    private boolean TRAIN_ISRUNNING; // Is it running?
-    private final StationLocks[] TRAIN_STATIONS;
-    private ArrayList<RobotLocks> TRAIN_PASSENGERS;
-    private ArrayList<RobotLocks> TRAIN_DROPOFFS;
-    private int TRAIN_WHERE;
+    private int numberOfSeats;
+    private int lock_count;
+    private ArrayList<RobotLocks> passengers;
+    private ArrayList<RobotLocks> dropoff;
+    private final StationLocks[] stations;
     private int trainID;
+    private int trainLocation;
+    private DoorStatus doorStatus;
+    private boolean trainRunning;
 
-    public TrainLocks(Semaphore TRAIN_AVAILABLESEATS, int TRAIN_NOOFSEATS, String TRAIN_NAME, StationLocks[] TRAIN_STATIONS, int id)
-    {
-        this.TRAIN_STATUS = "IDLE";
-        this.TRAIN_NOOFSEATS = TRAIN_NOOFSEATS;
-        this.TRAIN_NAME = TRAIN_NAME;
-        this.TRAIN_NOOFPASSENGERS = 0;
-        this.TRAIN_AVAILABLESEATS = TRAIN_AVAILABLESEATS;
-        this.TRAIN_DOORSTATUS = "CLOSED";
-        this.TRAIN_ISRUNNING = true;
-        this.TRAIN_STATIONS = TRAIN_STATIONS;
-        this.TRAIN_WHERE = 0;
-        this.TRAIN_PASSENGERS = new ArrayList();
-        this.TRAIN_DROPOFFS = new ArrayList();
-        this.trainID = id;
+    public TrainLocks(int numberOfSeats, int trainID, StationLocks[] stations) {
+        this.numberOfSeats = numberOfSeats;
+        this.stations = stations;
+        this.trainID = trainID;
+        this.doorStatus = DoorStatus.CLOSED;
+        trainRunning = true;
+        this.trainLocation = 0;
+        this.passengers = new ArrayList<>();
+        this.dropoff = new ArrayList<>();
+        this.lock_init(numberOfSeats);
     }
 
-    public void AddPassenger(RobotLocks passenger)
+    @Override
+    public void run()
     {
-        TRAIN_PASSENGERS.add(passenger);
+        while(trainRunning)
+        {
+            this.stations[this.trainLocation].setTrainOnStation(this);
+            try {
+                System.out.println(trainID + " = permits available: " + lock_count);
+                System.out.println(stations[trainLocation].getStationName());
+                //                this.DropPassenger();
+                this.stations[this.trainLocation].Station_Load_Train();
+                trainLocation = (trainLocation+1)%(stations.length);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public String getTRAIN_STATUS()
+    public void lock_init(int n)
     {
-        return TRAIN_STATUS;
+        lock_count = n;
     }
 
-    public void setTRAIN_STATUS(String TRAIN_STATUS)
+    public void lock_acquire()
     {
-        this.TRAIN_STATUS = TRAIN_STATUS;
+        if(lock_count == 0){}
+        else
+            lock_count -= 1;
+
     }
 
-    public int getTRAIN_NOOFSEATS()
+    public void lock_release(int n)
     {
-        return TRAIN_NOOFSEATS;
-    }
-
-    public void setTRAIN_NOOFSEATS(int TRAIN_NOOFSEATS)
-    {
-        this.TRAIN_NOOFSEATS = TRAIN_NOOFSEATS;
-    }
-
-    public int getTRAIN_NOOFPASSENGERS()
-    {
-        return TRAIN_NOOFSEATS - this.getTRAIN_AVAILABLESEATS();
-    }
-
-    public void setTRAIN_NOOFPASSENGERS(int TRAIN_NOOFPASSENGERS)
-    {
-        this.TRAIN_NOOFPASSENGERS = TRAIN_NOOFPASSENGERS;
-        StatusLocks.trainSeats.get(this.getTrainID()).setText(this.getTRAIN_NOOFPASSENGERS() + "/" + this.getTRAIN_NOOFSEATS());
-    }
-
-    public int getTRAIN_AVAILABLESEATS()
-    {
-        return TRAIN_AVAILABLESEATS.availablePermits();
-    }
-
-    public Semaphore getSemaphore()
-    {
-        return TRAIN_AVAILABLESEATS;
-    }
-
-    public void setTRAIN_AVAILABLESEATS(Semaphore TRAIN_AVAILABLESEATS)
-    {
-        this.TRAIN_AVAILABLESEATS = TRAIN_AVAILABLESEATS;
-    }
-
-    public String getTRAIN_NAME()
-    {
-        return TRAIN_NAME;
-    }
-
-    public void setTRAIN_NAME(String TRAIN_NAME)
-    {
-        this.TRAIN_NAME = TRAIN_NAME;
-    }
-
-    public String getTRAIN_DOORSTATUS()
-    {
-        return TRAIN_DOORSTATUS;
-    }
-
-    public void setTRAIN_DOORSTATUS(String TRAIN_DOORSTATUS)
-    {
-        this.TRAIN_DOORSTATUS = TRAIN_DOORSTATUS;
-    }
-
-    public boolean isTRAIN_ISRUNNING()
-    {
-        return TRAIN_ISRUNNING;
-    }
-
-    public void setTRAIN_ISRUNNING(boolean TRAIN_ISRUNNING)
-    {
-        this.TRAIN_ISRUNNING = TRAIN_ISRUNNING;
+        lock_count += n;
     }
 
     public int getTrainID()
@@ -122,14 +68,52 @@ public class TrainLocks implements Runnable
         return trainID;
     }
 
-    public int getTRAIN_WHERE()
+    public int getTrainLock()
     {
-        return TRAIN_WHERE;
+        return lock_count;
     }
 
-    @Override
-    public void run()
+    public void SetDoorStatus(DoorStatus doorStatus)
     {
+        this.doorStatus = doorStatus;
+    }
 
+    public void AddPassenger(RobotLocks robot)
+    {
+        passengers.add(robot);
+    }
+
+    public void DropPassenger()
+    {
+        //        for(Robot robot : passengers){
+        //            if(robot.getStationDestination().getStationNumber() == trainLocation){
+        //                passengers.remove(robot);
+        //                trainMutex.release();
+        //            }
+        //        }
+        for (RobotLocks robot : passengers){
+            System.out.println(robot);
+        }
+        dropoff.clear();
+        for (RobotLocks robot : passengers) {
+            if(robot.getStationDestination().getStationNumber() == trainLocation) {
+                //TextFrame.textarea.append("It's " + passenger.getROBOT_NAME()+ "[" + this.TRAIN_NOOFPASSENGERS +"]" + "'s destination, dropping off from " + TRAIN_STATIONS[getTRAIN_WHERE()].getSTATION_NAME() + "\n");
+                System.out.println("Train Location: " + trainLocation);
+                System.out.println("Destination Station Number : " + robot.getStationDestination().getStationNumber());
+                dropoff.add(robot);
+            }
+        }
+        passengers.removeAll(dropoff);
+        this.lock_release(dropoff.size());
+    }
+
+    public int getNumberOfPassengers()
+    {
+        return numberOfSeats - lock_count;
+    }
+
+    public int getNumberOfSeats()
+    {
+        return numberOfSeats;
     }
 }

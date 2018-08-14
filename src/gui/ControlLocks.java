@@ -163,11 +163,40 @@ public class ControlLocks extends JPanel implements ActionListener
 
         else if(e.getSource() == button_add_passengers)
         {
-
-
-
-
-
+            if(textfield_passengers_station.getText().equals(""))
+            {
+                JOptionPane.showMessageDialog(ControlLocks.this, "Please enter passenger number!", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+            else if(textfield_passengers_station.getText().matches("\\d+"))
+            {
+                int stationNumber = Integer.parseInt(textfield_passengers_station.getText());
+                StringBuilder stringBuilder = new StringBuilder();
+                Integer stationWaiting;
+                if(stationNumber<1||stationNumber>8)
+                {
+                    JOptionPane.showMessageDialog(ControlLocks.this, "Station does not exist!", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                else
+                {
+                    stringBuilder.append("Station").append(stationNumber);
+                    for(int i = 0; i< CalTrain_Locks.stations.length; i++)
+                    {
+                        if(CalTrain_Locks.stations[i].getStationName().equals(stringBuilder.toString()))
+                        {
+                            CalTrain_Locks.stations[i].Auto_Generate_Robot(CalTrain_Locks.stations);
+                            stationWaiting = CalTrain_Locks.stations[i].getStationPassengersWaiting();
+                            SystemLocks.setWaiting(stringBuilder.toString(),stationWaiting);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(ControlLocks.this, "Integers only!", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
 
         }
     }
