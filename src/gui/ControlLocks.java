@@ -27,10 +27,8 @@ public class ControlLocks extends JPanel implements ActionListener
             button_exit_program,
             button_add_train,
             button_add_passengers;
-
-    Font trainNumFont = new Font("Georgia", Font.PLAIN, 18);
-    Font fieldFont = new Font("Segoe UI", Font.PLAIN, 16);
-    Font buttonFont = new Font("Segoe UI", Font.BOLD, 16);
+    
+    Font styleFont = new Font("Arial", Font.BOLD, 18);
 
     int i = 0;
 
@@ -46,43 +44,48 @@ public class ControlLocks extends JPanel implements ActionListener
     public void buildComponents()
     {
         label_train_num = new JLabel("Active Trains:");
-        label_train_num.setFont(trainNumFont);
+        label_train_num.setFont(styleFont);
+        label_train_num.setForeground(Color.black);
 
-        label_train_count = new JLabel("0 out of 16");
-        label_train_count.setFont(trainNumFont);
-        label_train_count.setForeground(Color.decode("#e91e63"));
+        label_train_count = new JLabel("0/16");
+        label_train_count.setFont(styleFont);
+        label_train_count.setForeground(Color.pink);
 
         label_train_seats = new JLabel("Number of Seats on the Train:");
-        label_train_seats.setFont(fieldFont);
+        label_train_seats.setFont(styleFont);
+        label_train_seats.setForeground(Color.black);
 
         textfield_train_seats = new JTextField(10);
-        textfield_train_seats.setFont(fieldFont);
+        textfield_train_seats.setFont(styleFont);
+        textfield_train_seats.setForeground(Color.pink);
 
         label_passengers_station = new JLabel("Number of Station of the Passengers:");
-        label_passengers_station.setFont(fieldFont);
+        label_passengers_station.setFont(styleFont);
+        label_passengers_station.setForeground(Color.black);
 
         textfield_passengers_station = new JTextField(10);
-        textfield_passengers_station.setFont(fieldFont);
+        textfield_passengers_station.setFont(styleFont);
+        textfield_passengers_station.setForeground(Color.pink);
 
         button_exit_program = new JButton("Exit Program");
         button_exit_program.setFocusPainted(false);
-        button_exit_program.setFont(buttonFont);
-        button_exit_program.setForeground(Color.white);
-        button_exit_program.setBackground(Color.decode("#04bbaa"));
+        button_exit_program.setFont(styleFont);
+        button_exit_program.setForeground(Color.black);
+        button_exit_program.setBackground(Color.pink);
         button_exit_program.addActionListener(this);
 
         button_add_train = new JButton("Add Train");
         button_add_train.setFocusPainted(false);
-        button_add_train.setFont(buttonFont);
-        button_add_train.setForeground(Color.white);
-        button_add_train.setBackground(Color.decode("#04bbaa"));
+        button_add_train.setFont(styleFont);
+        button_add_train.setForeground(Color.black);
+        button_add_train.setBackground(Color.pink);
         button_add_train.addActionListener(this);
 
         button_add_passengers = new JButton("Add Passengers");
         button_add_passengers.setFocusPainted(false);
-        button_add_passengers.setFont(buttonFont);
-        button_add_passengers.setForeground(Color.white);
-        button_add_passengers.setBackground(Color.decode("#04bbaa"));
+        button_add_passengers.setFont(styleFont);
+        button_add_passengers.setForeground(Color.black);
+        button_add_passengers.setBackground(Color.pink);
         button_add_passengers.addActionListener(this);
     }
 
@@ -156,7 +159,7 @@ public class ControlLocks extends JPanel implements ActionListener
 
                     CalTrain.numOfTrains++;
 
-                    label_train_count.setText(CalTrain.numOfTrains + " out of 16");
+                    label_train_count.setText(CalTrain.numOfTrains + "/16");
                 }
             }
         }

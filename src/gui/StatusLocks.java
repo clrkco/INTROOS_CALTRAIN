@@ -18,9 +18,7 @@ public class StatusLocks extends JPanel implements ActionListener
     public static ArrayList<JLabel> trainStatus = new ArrayList(16);
     public static ArrayList<JLabel> trainStatusHead = new ArrayList(16);
 
-    Font trainNumFont = new Font("Tahoma", Font.BOLD, 18);
-    Font statusHead = new Font("Tahoma", Font.BOLD, 13);
-    Font numFont = new Font("Trebuchet MS", Font.BOLD, 14);
+    Font styleFont = new Font("Arial", Font.BOLD, 18);
 
     public StatusLocks()
     {
@@ -38,18 +36,24 @@ public class StatusLocks extends JPanel implements ActionListener
         for(int i = 0; i < 16; i++)
         {
             trainPanels.add(new JPanel(new MigLayout("")));
-            trainPanels.get(i).setBackground(Color.white);
+            trainPanels.get(i).setBackground(Color.pink);
             trainPanels.get(i).add(new JLabel("Train " + (i + 1)), "pushx, center, wrap 10");
 
             trainName.add(new JLabel(""));
-            trainName.get(i).setFont(trainNumFont);
+            trainName.get(i).setFont(styleFont);
+            trainName.get(i).setForeground(Color.black);
 
             trainSeats.add(new JLabel(""));
-            trainSeats.get(i).setFont(numFont);
+            trainSeats.get(i).setFont(styleFont);
+            trainSeats.get(i).setForeground(Color.black);
+
             trainStatus.add(new JLabel(""));
-            trainStatus.get(i).setForeground(Color.red);
+            trainStatus.get(i).setFont(styleFont);
+            trainStatus.get(i).setForeground(Color.black);
+
             trainStatusHead.add(new JLabel(""));
-            trainStatusHead.get(i).setFont(statusHead);
+            trainStatusHead.get(i).setFont(styleFont);
+            trainStatusHead.get(i).setForeground(Color.black);
         }
     }
 
