@@ -23,10 +23,6 @@ public class RobotSemaphores implements Runnable{
         }
     }
 
-    public RobotStatus getRobotStatus() {
-        return robotStatus;
-    }
-
     public void setRobotStatus(RobotStatus robotStatus) {
         this.robotStatus = robotStatus;
     }

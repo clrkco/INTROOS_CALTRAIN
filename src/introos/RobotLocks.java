@@ -20,12 +20,7 @@ public class RobotLocks implements Runnable
         try {
             stationOrigin.Station_Wait_For_Train(this);
         } catch (InterruptedException e) {
-            e.printStackTrace();
         }
-    }
-
-    public RobotStatus getRobotStatus() {
-        return robotStatus;
     }
 
     public void setRobotStatus(RobotStatus robotStatus) {

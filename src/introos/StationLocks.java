@@ -12,11 +12,11 @@ import java.util.logging.Logger;
 
 public class StationLocks
 {
-    private StationStatus stationStatus;            // Domain: IDLE, OCCUPIED
-    private String stationName;              // Optional name for Station object
-    private int stationPassengersWaiting;     // Number of Passengers waiting in the train station
-    private TrainLocks trainOnStation;            // The current Train object in the station
-    private boolean stationHasTrain;         // Does the station have a train?
+    private StationStatus stationStatus;
+    private String stationName;
+    private int stationPassengersWaiting;
+    private TrainLocks trainOnStation;
+    private boolean stationHasTrain;
     private ArrayList<Thread> stationRobots;
     private ArrayList<RobotLocks> stationRobotPOJO;
     private int stationCapacity;
@@ -91,7 +91,7 @@ public class StationLocks
         }
     }
 
-    public void Station_On_Board(RobotLocks robot) throws InterruptedException {
+    public void Station_On_Board(RobotLocks robot) {
         if(this.lock_acquire() == 1)
         {
             try {
@@ -99,7 +99,7 @@ public class StationLocks
                     this.lock_release();
                     Station_Wait_For_Train(robot);
                 } else {
-                    System.out.println("in here");
+//                    System.out.println("in here");
                     trainOnStation.lock_acquire();
                     this.stationPassengersWaiting--;
                     SystemLocks.setWaiting(this.stationName, stationPassengersWaiting);
@@ -108,13 +108,8 @@ public class StationLocks
                     stationRobotPOJO.remove(robot);
                 }
             } catch (Exception e) {
-                System.out.println(e.getMessage());
             }
             this.lock_release();
-        }
-        else
-        {
-            //wait
         }
     }
 
@@ -123,31 +118,22 @@ public class StationLocks
         SystemLocks.setOccupied(stationName,Integer.toString(trainOnStation.getTrainID()));
         if(this.lock_acquire() == 1)
         {
-
+            stationHasTrain = true;
+            stationStatus = StationStatus.OCCUPIED;
             trainOnStation.SetDoorStatus(DoorStatus.OPEN);
             trainOnStation.DropPassenger();
             StatusLocks.trainSeats.get(trainOnStation.getTrainID()).setText(Integer.toString(trainOnStation.getNumberOfPassengers()) + "/" + trainOnStation.getNumberOfSeats());
 
-            if (stationPassengersWaiting == 0)
-            {
-
-            }
-            else if (trainOnStation.getTrainLock() == 0)
-            {
-                //no seats on train available
-            }
-            else {
+            if(stationPassengersWaiting != 0){
                 System.out.println("notified passengers");
                 this.notifyAll(); //wake all waiting robot threads
             }
-            Thread.sleep(3000);
+            Thread.sleep(1000);
+            stationHasTrain = false;
+            stationStatus = StationStatus.IDLE;
             trainOnStation.SetDoorStatus(DoorStatus.CLOSED);
             this.lock_release();
             SystemLocks.setFree(stationName);
-        }
-        else
-        {
-            //wait
         }
     }
 
@@ -157,10 +143,6 @@ public class StationLocks
         this.lock_release();
         wait();
         this.Station_On_Board(robot);
-    }
-
-    public TrainLocks getTrainOnStation() {
-        return trainOnStation;
     }
 
     public void setTrainOnStation(TrainLocks trainOnStation) {

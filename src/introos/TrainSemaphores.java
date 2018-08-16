@@ -34,13 +34,11 @@ public class TrainSemaphores implements Runnable{
         {
             this.stations[this.trainLocation].setTrainOnStation(this);
             try {
-                System.out.println(trainID + " = permits available: " + trainMutex.availablePermits());
-                System.out.println(stations[trainLocation].getStationName());
-                //                this.DropPassenger();
+//                System.out.println(trainID + " = permits available: " + trainMutex.availablePermits());
+//                System.out.println(stations[trainLocation].getStationName());
                 this.stations[this.trainLocation].Station_Load_Train();
                 trainLocation = (trainLocation+1)%(stations.length);
             } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -67,19 +65,12 @@ public class TrainSemaphores implements Runnable{
 
     public void DropPassenger()
     {
-        //        for(Robot robot : passengers){
-        //            if(robot.getStationDestination().getStationNumber() == trainLocation){
-        //                passengers.remove(robot);
-        //                trainMutex.release();
-        //            }
-        //        }
         for (RobotSemaphores robot : passengers){
             System.out.println(robot);
         }
         dropoff.clear();
         for (RobotSemaphores robot : passengers) {
             if(robot.getStationDestination().getStationNumber() == trainLocation) {
-                //                TextFrame.textarea.append("It's " + passenger.getROBOT_NAME()+ "[" + this.TRAIN_NOOFPASSENGERS +"]" + "'s destination, dropping off from " + TRAIN_STATIONS[getTRAIN_WHERE()].getSTATION_NAME() + "\n");
                 System.out.println("Train Location: " + trainLocation);
                 System.out.println("Destination Station Number : " + robot.getStationDestination().getStationNumber());
                 dropoff.add(robot);
